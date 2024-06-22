@@ -1,0 +1,207 @@
+class Book:
+    def __init__(self, title, author, isbn):
+        self.title = title
+        self.author = author
+        self.isbn = isbn
+        self.available = True
+
+    def wyswietl(self):
+        return f"{self.title} by {self.author}"
+
+    def __str__(self):
+        return f"{self.title} by {self.author} (ISBN: {self.isbn})"
+
+
+class Member:
+    def __init__(self, name, member_id):
+        self.name = name
+        self.member_id = member_id
+        self.borrowed_books = []
+
+    def borrow_book(self, book):
+        if book.available:
+            self.borrowed_books.append(book)
+            book.available = False
+            print(f"Book '{book.title}' borrowed by {self.name}.")
+        else:
+            print(f"Book '{book.title}' is currently not available.")
+
+    def return_book(self, book):
+        if book in self.borrowed_books:
+            self.borrowed_books.remove(book)
+            book.available = True
+            print(f"Book '{book.title}' returned by {self.name}.")
+        else:
+            print(f"{self.name} does not have '{book.title}' borrowed.")
+
+    def __str__(self):
+        return f"{self.name} (ID: {self.member_id})"
+
+
+class Library:
+    def __init__(self):
+        self.books = []
+        self.members = []
+
+    def add_book(self, book):
+        if book.isbn not in [b.isbn for b in self.books]:
+            self.books.append(book)
+            print(f"Book '{book.title}' added to the library.")
+        else:
+            print(f"Book with ISBN {book.isbn} already exists in the library.")
+
+    def remove_book(self, book):
+        if book in self.books:
+            self.books.remove(book)
+            print(f"Book '{book.title}' removed from the library.")
+        else:
+            print(f"Book '{book.title}' not found in the library.")
+
+    def register_member(self, member):
+        if member.member_id not in [m.member_id for m in self.members]:
+            self.members.append(member)
+            print(f"Member '{member.name}' registered in the library.")
+        else:
+            print(f"Member with ID {member.member_id} already exists in the library.")
+
+    def unregister_member(self, member):
+        if member in self.members:
+            self.members.remove(member)
+            print(f"Member '{member.name}' unregistered from the library.")
+        else:
+            print(f"Member '{member.name}' not found in the library.")
+
+    def find_book_by_title(self, title):
+        found_books = [book for book in self.books if book.title == title]
+        if found_books:
+            for book in found_books:
+                print(book.wyswietl())
+        else:
+            print(f"No books found with the title '{title}'.")
+
+    def find_books_by_author(self, author):
+        found_books = [book for book in self.books if book.author == author]
+        if found_books:
+            for book in found_books:
+                print(book.wyswietl())
+        else:
+            print(f"No books found by the author '{author}'.")
+
+    def display_all_books(self):
+        for book in self.books:
+            print(book)
+
+    def display_all_members(self):
+        for member in self.members:
+            print(member)
+
+
+def main():
+    library = Library()
+
+    def add_book():
+        title = input("Enter book title: ")
+        author = input("Enter book author: ")
+        isbn = input("Enter book ISBN: ")
+        book = Book(title, author, isbn)
+        library.add_book(book)
+
+    def remove_book():
+        title = input("Enter book title to remove: ")
+        book = next((b for b in library.books if b.title == title), None)
+        if book:
+            library.remove_book(book)
+        else:
+            print("Book not found.")
+
+    def register_member():
+        name = input("Enter member name: ")
+        member_id = input("Enter member ID: ")
+        member = Member(name, member_id)
+        library.register_member(member)
+
+    def unregister_member():
+        member_id = input("Enter member ID to unregister: ")
+        member = next((m for m in library.members if m.member_id == member_id), None)
+        if member:
+            library.unregister_member(member)
+        else:
+            print("Member not found.")
+
+    def borrow_book():
+        member_id = input("Enter member ID: ")
+        title = input("Enter book title to borrow: ")
+        member = next((m for m in library.members if m.member_id == member_id), None)
+        book = next((b for b in library.books if b.title == title), None)
+        if member and book:
+            member.borrow_book(book)
+        else:
+            print("Invalid member ID or book title.")
+
+    def return_book():
+        member_id = input("Enter member ID: ")
+        title = input("Enter book title to return: ")
+        member = next((m for m in library.members if m.member_id == member_id), None)
+        book = next((b for b in member.borrowed_books if b.title == title), None)
+        if member and book:
+            member.return_book(book)
+        else:
+            print("Invalid member ID or book title.")
+
+    def find_book_by_title():
+        title = input("Enter book title: ")
+        library.find_book_by_title(title)
+
+    def find_books_by_author():
+        author = input("Enter book author: ")
+        library.find_books_by_author(author)
+
+    def display_all_books():
+        library.display_all_books()
+
+    def display_all_members():
+        library.display_all_members()
+
+    def exit_program():
+        nonlocal running
+        running = False
+
+    actions = {
+        '1': add_book,
+        '2': remove_book,
+        '3': register_member,
+        '4': unregister_member,
+        '5': borrow_book,
+        '6': return_book,
+        '7': find_book_by_title,
+        '8': find_books_by_author,
+        '9': display_all_books,
+        '10': display_all_members,
+        '11': exit_program
+    }
+
+    running = True
+    while running:
+        print("\nLibrary Management System")
+        print("1. Add Book")
+        print("2. Remove Book")
+        print("3. Register Member")
+        print("4. Unregister Member")
+        print("5. Borrow Book")
+        print("6. Return Book")
+        print("7. Find Book by Title")
+        print("8. Find Books by Author")
+        print("9. Display All Books")
+        print("10. Display All Members")
+        print("11. Exit")
+
+        choice = input("Enter your choice: ")
+
+        action = actions.get(choice)
+        if action:
+            action()
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
